@@ -5,7 +5,7 @@ import { FaInstagram, FaLinkedin, FaEnvelope } from "react-icons/fa";
 const Footer = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [showPopup, setShowPopup] = useState(false);
-  const typingSpeed = 50;
+ 
 
   const handleChange = (field: "name" | "email" | "message", value: string) => {
     setFormData({ ...formData, [field]: value });

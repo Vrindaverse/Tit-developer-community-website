@@ -163,7 +163,7 @@ const CodeEditorRegister = () => {
   }, [language]);
 
   // Parse code into form data
-  const handleEditorChange: OnChange = (value, ev) => {
+  const handleEditorChange: OnChange = (value,) => {
     if (value === undefined) return;
     setCode(value);
     const parsedData = languages[language].parse(value);

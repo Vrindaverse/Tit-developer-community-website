@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 const INITIAL_STARS = 100;
@@ -9,7 +9,6 @@ const FLOAT_SPEED = -0.05;
 const NEW_STAR_INTERVAL = 1500;
 const CONSTELLATION_GROUP_SIZE = 6;
 
-// Define Star type
 type Star = {
   x: number;
   y: number;
@@ -18,11 +17,11 @@ type Star = {
   dy: number;
   connections: number[];
   isConstellation: boolean;
+  constellationId?: number; // Group identifier
 };
 
 const Constellation = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [stars, setStars] = useState<Star[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,7 +29,7 @@ const Constellation = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const createStar = (isConstellation = false): Star => ({
+    const createStar = (isConstellation = false, constellationId?: number): Star => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       radius: Math.random() * 2 + 1,
@@ -38,10 +37,10 @@ const Constellation = () => {
       dy: (Math.random() - 0.5) * 2,
       connections: [],
       isConstellation,
+      constellationId,
     });
 
     let currentStars: Star[] = Array.from({ length: INITIAL_STARS }, () => createStar(Math.random() < 0.3));
-    setStars(currentStars);
 
     const drawStars = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -74,13 +73,25 @@ const Constellation = () => {
     };
 
     const updateStars = () => {
-      currentStars.forEach((star) => {
-        star.x += star.dx * STAR_SPEED;
-        star.y += FLOAT_SPEED;
+      currentStars = currentStars.map((star) => {
+        if (star.isConstellation && star.constellationId !== undefined) {
+          // Move the entire constellation together
+          const group = currentStars.filter((s) => s.constellationId === star.constellationId);
+          const groupDX = group.reduce((sum, s) => sum + s.dx, 0) / group.length;
+          const groupDY = group.reduce((sum, s) => sum + s.dy, 0) / group.length;
 
-        if (star.x < 0) star.x = canvas.width;
-        if (star.x > canvas.width) star.x = 0;
-        if (star.y < 0) star.y = canvas.height;
+          return {
+            ...star,
+            x: (star.x + groupDX * STAR_SPEED + window.innerWidth) % window.innerWidth,
+            y: (star.y + groupDY * STAR_SPEED + window.innerHeight) % window.innerHeight,
+          };
+        } else {
+          return {
+            ...star,
+            x: (star.x + star.dx * STAR_SPEED + window.innerWidth) % window.innerWidth,
+            y: (star.y + FLOAT_SPEED + window.innerHeight) % window.innerHeight,
+          };
+        }
       });
 
       drawStars();
@@ -90,19 +101,17 @@ const Constellation = () => {
     const addNewStar = () => {
       if (currentStars.length < MAX_STARS) {
         currentStars = [...currentStars, createStar(Math.random() < 0.3)];
-        setStars(currentStars);
       }
     };
 
     const handleMouseClick = (e: MouseEvent) => {
-      let newStars: Star[] = [...currentStars];
-      let constellationCenter = { x: e.clientX, y: e.clientY };
       let newConstellation: Star[] = [];
-      
-      // Randomize shape patterns for constellations
+      const constellationCenter = { x: e.clientX, y: e.clientY };
+      const constellationId = Date.now(); // Unique identifier
+
       const randomShapeFactor = Math.random() * 80 + 20;
       const angleStep = (Math.PI * 2) / CONSTELLATION_GROUP_SIZE;
-      
+
       for (let i = 0; i < CONSTELLATION_GROUP_SIZE; i++) {
         const angle = i * angleStep;
         newConstellation.push({
@@ -113,12 +122,11 @@ const Constellation = () => {
           dy: (Math.random() - 0.5) * 2,
           connections: [],
           isConstellation: true,
+          constellationId,
         });
       }
-      
-      newStars = [...newStars, ...newConstellation];
-      setStars(newStars);
-      currentStars = newStars;
+
+      currentStars = [...currentStars, ...newConstellation];
     };
 
     const handleResize = () => {

@@ -78,7 +78,7 @@ The **TIT Developer Community Website** serves as an official platform for stude
    npm run dev
    ```
 3. **Open in Browser:**
-   The site will be available at `http://localhost:3000`
+   The site will be available at `http://localhost:5173`
 
 ## 🎨 Design Inspiration
 - **Futuristic space-themed design** with a seamless **blend of animations and UI elements**.
