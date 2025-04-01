@@ -85,28 +85,54 @@ The **TIT Developer Community Website** serves as an official platform for stude
 - **Interactive elements** enhancing user engagement.
 - **Card-based layouts** for clarity and organization.
 
-## 📸 Screenshots
+# 📸 Screenshots & Previews  
 
-### Interactive Hero Section  
+Below are the key UI sections of the **TIT Developer Community Website**, showcasing interactive elements and design implementations.  
+
+---
+
+## 🚀 Hero Section (Interactive & Animated)  
+A visually engaging **hero section** with animations, interactive elements, and a smooth user experience.  
 ![Interactive Hero Section](src/assets/screenshots/hero.png)  
 
-### Terminal Interface  
+---
+
+## 💻 Terminal Interface (Docs Page)  
+A **terminal-style interface** designed for the documentation section, simulating an AI-powered assistant.  
 ![Terminal Interface](src/assets/screenshots/terminal.png)  
 
-### Hall of Fame  
+---
+
+## 🏆 Hall of Fame  
+A dynamic **Hall of Fame** page showcasing top contributors and achievements within the community.  
 ![Hall of Fame](src/assets/screenshots/halloffame.png)  
 
-### Docs Page  
+---
+
+## 📖 Documentation Page  
+The structured **Docs section** featuring multiple topics, guides, and interactive learning resources.  
 ![Docs Page](src/assets/screenshots/docs.png)  
 
-### Registration Page (Code Editor-Based Form)  
+---
+
+## 📝 Registration Page (Code Editor-Based Form)  
+A **unique, code editor-style registration form** designed for an immersive developer experience.  
 ![Registration Page](src/assets/screenshots/registration.png)  
 
+---
 
-## 👥 Contributors
-- **Nikhil Mahalik** (Enrollment No: 0191CS241118)
-- **Satyam Sharma** (Enrollment No: 0192CS241308)
-- **Abhay Singh** (Enrollment No: 0191CY10001)
+This documentation provides a visual reference for the key sections of the **TIT Developer Community Website**.  
+For any contributions, refer to the **contributing guidelines**. 🚀  
+
+
+## 👥 Contributors  
+
+The **TIT Developer Community Website** was developed by the following contributors:  
+
+- **Nikhil Mahalik** (Enrollment No: 0191CS241118)  
+- **Satyam Sharma** (Enrollment No: 0192CS241308)  
+- **Abhay Singh** (Enrollment No: 0191CY10001)  
+
 
 ## 🔮 Future Enhancements
 - Backend integration for **event registrations & authentication**
