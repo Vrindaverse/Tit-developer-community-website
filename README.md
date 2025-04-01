@@ -86,7 +86,6 @@ The **TIT Developer Community Website** serves as an official platform for stude
 - **Card-based layouts** for clarity and organization.
 
 ## 📸 Screenshots
-- **Home Page:** `src/assets/screenshots/home.png`
 - **Interactive Hero Section:** `src/assets/screenshots/hero.png`
 - **Terminal Interface:** `src/assets/screenshots/terminal.png`
 - **Hall of Fame:** `src/assets/screenshots/halloffame.png`
