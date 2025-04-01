@@ -86,11 +86,22 @@ The **TIT Developer Community Website** serves as an official platform for stude
 - **Card-based layouts** for clarity and organization.
 
 ## 📸 Screenshots
-- **Interactive Hero Section:** `src/assets/screenshots/hero.png`
-- **Terminal Interface:** `src/assets/screenshots/terminal.png`
-- **Hall of Fame:** `src/assets/screenshots/halloffame.png`
-- **Docs Page:** `src/assets/screenshots/docs.png`
-- **Registration Page (Code Editor-Based Form):** `src/assets/screenshots/registration.png`
+
+### Interactive Hero Section  
+![Interactive Hero Section](src/assets/screenshots/hero.png)  
+
+### Terminal Interface  
+![Terminal Interface](src/assets/screenshots/terminal.png)  
+
+### Hall of Fame  
+![Hall of Fame](src/assets/screenshots/halloffame.png)  
+
+### Docs Page  
+![Docs Page](src/assets/screenshots/docs.png)  
+
+### Registration Page (Code Editor-Based Form)  
+![Registration Page](src/assets/screenshots/registration.png)  
+
 
 ## 👥 Contributors
 - **Nikhil Mahalik** (Enrollment No: 0191CS241118)
