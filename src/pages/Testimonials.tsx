@@ -24,7 +24,7 @@ import Sheetal_Kawadkar from "../assets/testimonials/Sheetal_Kawadkar.jpg"
 import Shivam_Tiwari from "../assets/testimonials/SHIVAM_Tiwari.jpg"
 import Siddhart_Kumar from "../assets/testimonials/Siddharth_Kumar.jpg"
 import Yashraj from "../assets/testimonials/Yashraj.png"
-
+import icy_bear from "../assets/testimonials/icy_bear.png"
 const testimonials = [
   {
     name: 'Aman Mishra',
@@ -37,7 +37,7 @@ const testimonials = [
     name: 'Prakhar Shrivastava',
     enrollNumber: '0191CS231189',
     courses: 'ML, Web Dev, Cyber',
-    photoLink: '/src/assets/testimonials/prakhar srivastav.jpeg', // Replace with actual path
+    photoLink: icy_bear,
     description: 'Prakhar has a strong background in Machine Learning, Web Development, and Cybersecurity. His ability to combine these areas has enabled him to work on innovative, cross-functional solutions.',
   },
   {
@@ -213,7 +213,7 @@ const testimonials = [
 
 const AlumniTestimonials = () => {
   return (
-    <div className="bg-[#020c1b] py-16 px-4 mt-10">
+    <div className="bg-[#020c1b] py-16 px-4 ">
       {/* Section Heading */}
       <div className="max-w-3xl mx-auto text-center mb-12">
         <h2 className="text-4xl font-bold text-white tracking-wider">
