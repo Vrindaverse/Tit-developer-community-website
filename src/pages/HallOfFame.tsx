@@ -3,6 +3,14 @@ import { FaMedal } from "react-icons/fa";
 import { useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import hall4 from "../assets/hall_of_fame/hall4.jpg";
+import hall1 from "../assets/hall_of_fame/hall1.jpg";
+import hall2 from "../assets/hall_of_fame/hall2.jpg";
+import hall3 from "../assets/hall_of_fame/hall3.jpg";
+import hall5 from "../assets/hall_of_fame/hall5.jpg";
+import hall6 from "../assets/hall_of_fame/hall6.jpg";
+import hall7 from "../assets/hall_of_fame/hall7.jpg";
+import hall8 from "../assets/hall_of_fame/hall8.jpg";
 
 const hallOfFameData = [
   {
@@ -35,16 +43,7 @@ const hallOfFameData = [
   },
 ];
 
-const galleryImages = [
-  "/src/assets/hall of fame/hall1.JPG",
-  "/src/assets/hall of fame/hall2.JPG",
-"/src/assets/hall of fame/hall3.JPG",
- "/src/assets/hall of fame/hall4.JPG",
-  "/src/assets/hall of fame/hall5.JPG",
-  "/src/assets/hall of fame/hall6.JPG",
-  "/src/assets/hall of fame/hall7.JPG",
-  "/src/assets/hall of fame/hall8.JPG",
-];
+const galleryImages = [hall4, hall2, hall1, hall3, hall5, hall6, hall7, hall8];
 
 const HallOfFame = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import symbol from "../assets/symbol.png";
 import {
   Home,
   Users,
@@ -29,7 +30,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo and TDC Text */}
         <Link to="/" className="flex items-center space-x-3">
-          <img src="/src/assets/symbol.png" alt="TDC Logo" className="w-10 h-10 object-contain" />
+          <img src={symbol} alt="TDC Logo" className="w-10 h-10 object-contain" />
           <span className="text-white text-3xl font-orbitron font-extrabold tracking-widest">
             TDC
           </span>

@@ -2,34 +2,42 @@ import React from 'react';
 import { motion } from "framer-motion";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import and from "../assets/android.png";
+import and2 from "../assets/android2.png";
+import and3 from "../assets/android3.png";
+import blue from "../assets/blue.png";
+import a from "../assets/1.png";
+import b from "../assets/2.png";
+import hall7 from "../assets/hall_of_fame/hall7.jpg"
+import coding from "../assets/coding.png"
 
 const eventsData = [
   {
     title: "Android Development Workshop",
     description: "Learn how to create Android apps from scratch. A hands-on workshop for beginners and experts alike.",
     images: [
-      "/src/assets/android.png",
-      "/src/assets/android2.png",
-      "/src/assets/android3.png",
+     and,
+     and2,
+     and3,
     ],
   },
   {
     title: "Web Development Hackathon",
     description: "Build and showcase your web development skills in this exciting hackathon!",
-    images: ["/src/assets/blue.png"],
+    images: [blue],
   },
   {
     title: "Coding Quest",
     description: "A competitive programming event to challenge your problem-solving skills.",
     images: [
-      "/src/assets/coding.png",
-      "/src/assets/hall of fame/hall7.JPG",
+      coding,
+      hall7,
     ],
   },
   {
     title: "Regular Classes (Google Classroom, Google Meet)",
     description: "Weekly classes covering various programming languages and tools. Stay up-to-date with the latest in tech.",
-    images: ["/src/assets/1.png", "/src/assets/2.png"],
+    images: [a,b],
   },
 ]; // Existing data
 

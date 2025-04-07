@@ -5,7 +5,11 @@ import Constellation from "./Constellation";
 
 export default function HeroSection() {
   const initialSnippet = "beep beep..beeeeeppp......Initializing TIT Developer Community AI...";
-  const mainSnippet = `
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showMainSnippet, setShowMainSnippet] = useState(false);
+
+  const mainSnippet = isMobile ? `
   {
   "founders of the community": ["Annand Soni", "Ankit Kumar", "Ankit Patel"],
   "mission": "Our goal is to empower engineers through immersive experiences, celestial coding challenges, and futuristic frameworks.",
@@ -17,9 +21,33 @@ export default function HeroSection() {
   }
 }
 
+  ` : `
+  {
+  "founders of the community": ["Annand Soni", "Ankit Kumar", "Ankit Patel"],
+  "website_developers": [
+    {"name": "Nikhil Mahalik", "enrollment_no": "0192CS241118"},
+    {"name": "Satyam Sharma", "enrollment_no": "0191CS241308"},
+    {"name": "Abhay Singh", "enrollment_no": "0191CY241001"}
+  ],
+  "mission": "Our goal is to empower engineers through immersive experiences, celestial coding challenges, and futuristic frameworks.",
+  "vision": "Bridging the gap between academia and industry with innovation, mentorship, and real-world projects.",
+  "call_to_action": {
+    "unlock_potential": "Unlock your potential and join the revolution!",
+    "learn_more": "To learn more, visit our 'Learn More' section.",
+    "join_us": "Ready to join? Click 'Join Us Now'!"
+  }
+}
+
   `;
 
-  const [showMainSnippet, setShowMainSnippet] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -29,7 +57,7 @@ export default function HeroSection() {
 
   return (
     <>
-      <style >{`
+      <style>{`
         @media (max-width: 768px) {
           .hero-section-mobile {
             flex-direction: column !important;
@@ -95,7 +123,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
-            >
+          >
             <span className="text-blue-400 text-4xl md:text-6xl font-bold">&lt;</span>
             <span className="text-white text-4xl md:text-6xl font-bold">/</span>
             <span className="text-orange-400 text-4xl md:text-6xl font-bold">&gt;</span>

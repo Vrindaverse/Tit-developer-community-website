@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { FaLinkedin } from "react-icons/fa";
 import Anand_soni from "../assets/mentors/Anand_Soni.png";
-
+import ankit_kumar from "../assets/mentors/ankit_kumar.jpg";
+import ankit_patel from "../assets/mentors/ankit_patel.jpg";
 type Mentor = {
   name: string;
   role: string;
@@ -17,7 +18,7 @@ const mentors: Mentor[] = [
     role: "Full-Stack Developer",
     bio: "Expert in MERN stack and passionate about mentoring students in web development.",
     linkedin: "https://www.linkedin.com/in/ankitkumar0905/",
-    image: "/src/assets/mentors/ankit kumar.jpg",
+    image: ankit_kumar,
     details:
       "Engineer Intern at Ramraj Technology Solutions | Python, Java, AWS, AI Fundamentals. Android developer specializing in hybrid mobile apps. Skilled in C++, Java, and DSA with multiple frontend projects. Passionate about transforming ideas into reality.",
   },
@@ -35,7 +36,7 @@ const mentors: Mentor[] = [
     role: "Cybersecurity Specialist",
     bio: "Ethical hacker and cybersecurity expert ensuring digital security and privacy.",
     linkedin: "https://www.linkedin.com/in/ankit-patel-563b9927b/",
-    image: "/src/assets/mentors/ankit patel.jpg",
+    image: ankit_patel,
     details:
       "Engineering student passionate about problem-solving and innovation. Hands-on experience with Python ML projects. Eager to learn new technologies and implement them in real life.",
   },

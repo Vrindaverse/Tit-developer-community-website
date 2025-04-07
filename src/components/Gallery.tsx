@@ -3,17 +3,25 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaArrowLeft, FaArrowRight, FaTimes } from "react-icons/fa";
+import a from "../assets/1.png";
+import b from "../assets/2.png";
+import c from "../assets/3.png";
+import d from "../assets/4.png";
+import e from "../assets/5.png";
+import f from "../assets/6.png";
+import g from "../assets/7.png";
+import h from "../assets/8.jpg";
 
 // Gallery Images
 const galleryImages = [
-  { src: "/src/assets/1.png",  },
-  { src: "/src/assets/2.png", },
-  { src: "/src/assets/3.png",  },
-  { src: "/src/assets/4.png",  },
-  { src: "/src/assets/5.png",  },
-  { src: "/src/assets/6.png",  },
-  { src: "/src/assets/7.png",  },
-  { src: "/src/assets/8.jpg",  },
+  a,
+  b,
+  c,
+  d,
+  e,
+  f,
+  g,
+  h,
 ];
 
 const Gallery = () => {
@@ -81,10 +89,10 @@ const Gallery = () => {
               <div key={index} className="px-4">
                 <div
                   className="relative rounded-xl overflow-hidden shadow-lg group cursor-pointer"
-                  onClick={() => setSelectedImage(image.src)}
+                  onClick={() => setSelectedImage(image)}
                 >
                   <img
-                    src={image.src}
+                    src={image}
                     
                     className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
                   />
