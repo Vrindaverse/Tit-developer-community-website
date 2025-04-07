@@ -138,7 +138,12 @@ const languages: { [key: string]: Language } = {
   }
 };
 
-const SimpleForm = ({ onSubmit, onReset }) => {
+interface SimpleFormProps {
+  onSubmit: (formData: Record<string, string>) => void;
+  onReset: () => void;
+}
+
+const SimpleForm: React.FC<SimpleFormProps> = ({ onSubmit, onReset }) => {
   const [formData, setFormData] = useState({
     name: '',
     year: '',
@@ -149,12 +154,12 @@ const SimpleForm = ({ onSubmit, onReset }) => {
     phone: '',
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(formData);
   };
@@ -280,7 +285,7 @@ const CodeEditorRegister = () => {
     setTimeout(() => setStatusMessage('Ready'), 2000);
   };
 
-  const handleSubmit = (submittedData) => {
+  const handleSubmit = (submittedData: Record<string, string>) => {
     setIsSubmitting(true);
     setStatusMessage('Executing registration...');
     const dots = ['.', '..', '...'];
@@ -319,14 +324,14 @@ const CodeEditorRegister = () => {
       .replace(/: (true|false|null|\d+)/g, ': <span class="text-blue-400">$1</span>');
   };
 
-  const handleEditorMount: OnMount = (editor) => {
+  const handleEditorMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
     const model = editor.getModel();
     if (model) {
       model.onDidChangeContent(() => {
         const lastLine = model.getLineCount();
         const lastLineContent = model.getLineContent(lastLine);
-        const finalOutput = languages[language].comments.pop();
+        const finalOutput = languages[language].comments[languages[language].comments.length - 1];
         if (lastLineContent !== finalOutput) {
           model.applyEdits([{
             range: new monaco.Range(lastLine, 1, lastLine, lastLineContent.length + 1),
@@ -506,7 +511,7 @@ const CodeEditorRegister = () => {
                 <motion.button
                   whileHover={isFormComplete() ? { scale: 1.05, backgroundColor: '#222741', boxShadow: '0 0 10px #3B82F6, 0 0 20px #3B82F6' } : {}}
                   whileTap={isFormComplete() ? { scale: 0.95 } : {}}
-                  onClick={handleSubmit}
+                  onClick={() => handleSubmit(formData)}
                   disabled={!isFormComplete() || isSubmitting}
                   className={`px-5 py-1.5 rounded text-sm flex items-center ${
                     isFormComplete() ? 
