@@ -2,6 +2,20 @@ import { motion } from "framer-motion";
 
 const testimonials = [
   {
+    name: 'Aman Mishra',
+    enrollNumber: '0191CS231034',
+    courses: 'Android Developer,ML',
+    photoLink: '/src/assets/testimonials/chinu.jpeg', // Replace with actual path
+    description: 'Aman’s expertise in Machine Learning has allowed him to create groundbreaking algorithms. His contributions to AI projects have been transformative for the community.',
+  },
+  {
+    name: 'Prakhar Shrivastava',
+    enrollNumber: '0191CS231189',
+    courses: 'ML, Web Dev, Cyber',
+    photoLink: '/src/assets/testimonials/prakhar srivastav.jpeg', // Replace with actual path
+    description: 'Prakhar has a strong background in Machine Learning, Web Development, and Cybersecurity. His ability to combine these areas has enabled him to work on innovative, cross-functional solutions.',
+  },
+  {
     name: 'Sarthak Kumar',
     enrollNumber: '0191CS231234',
     courses: 'Web Dev',
@@ -162,20 +176,7 @@ const testimonials = [
     photoLink: '/src/assets/testimonials/Sejal Tiwari.png', // Replace with actual path
     description: 'Sejal has been a multi-disciplinary contributor to the community, excelling in ML, Web Dev, Cybersecurity, and Android. Her well-rounded skills have made her a go-to person for diverse projects.',
   },
-  {
-    name: 'Aman Mishra',
-    enrollNumber: '0191CS231034',
-    courses: 'ML',
-    photoLink: '/src/assets/testimonials/Aman Mishra (Chinu).jpg', // Replace with actual path
-    description: 'Aman’s expertise in Machine Learning has allowed him to create groundbreaking algorithms. His contributions to AI projects have been transformative for the community.',
-  },
-  {
-    name: 'Prakhar Shrivastava',
-    enrollNumber: '0191CS231189',
-    courses: 'ML, Web Dev, Cyber',
-    photoLink: '/src/assets/testimonials/Icy_Bear.jpg', // Replace with actual path
-    description: 'Prakhar has a strong background in Machine Learning, Web Development, and Cybersecurity. His ability to combine these areas has enabled him to work on innovative, cross-functional solutions.',
-  },
+ 
   {
     name: 'Deepika Deshmukh',
     enrollNumber: '0192AL221028',

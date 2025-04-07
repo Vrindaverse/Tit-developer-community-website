@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Home, Users, Calendar, Trophy, MessageSquare, FileText, HelpCircle } from "lucide-react";
+import {
+  Home,
+  Users,
+  Calendar,
+  Trophy,
+  MessageSquare,
+  FileText,
+  HelpCircle,
+} from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,14 +27,12 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 w-full px-6 py-4 bg-gradient-to-r from-gray-900 via-gray-800 to-black border-b border-gray-700 z-50 shadow-xl">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        {/* Logo */}
-        <Link to="/" className="text-3xl font-extrabold text-white tracking-widest flex items-center">
-          <span className="text-blue-400">&lt;</span>
-          <span className="text-white-400">/</span>
-          <span className="text-orange-400">&gt;</span>
-          <span className="text-blue-400">TIT</span>
-          <span className="text-white">Developer</span>
-          <span className="text-orange-400">Community</span>
+        {/* Logo and TDC Text */}
+        <Link to="/" className="flex items-center space-x-3">
+          <img src="/src/assets/symbol.png" alt="TDC Logo" className="w-10 h-10 object-contain" />
+          <span className="text-white text-3xl font-orbitron font-extrabold tracking-widest">
+            TDC
+          </span>
         </Link>
 
         {/* Desktop Menu */}
@@ -66,7 +72,7 @@ const Navbar = () => {
         </motion.button>
       </div>
 
-      {/* Mobile Sidebar Menu */}
+      {/* Mobile Sidebar */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -76,7 +82,6 @@ const Navbar = () => {
             transition={{ type: "spring", stiffness: 80, damping: 15 }}
             className="fixed inset-0 bg-gray-950/80 backdrop-blur-2xl z-40 flex flex-col items-center justify-center space-y-6 shadow-2xl rounded-l-3xl p-10"
           >
-            {/* Sidebar Navigation */}
             {navItems.map((item, index) => (
               <motion.div
                 key={item.name}
@@ -96,7 +101,6 @@ const Navbar = () => {
               </motion.div>
             ))}
 
-            {/* TIT DEVELOPER COMMUNITY Slogan */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

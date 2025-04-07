@@ -1,5 +1,5 @@
-import { FaLinkedin } from "react-icons/fa";
 import { useState } from "react";
+import { FaLinkedin } from "react-icons/fa";
 
 type Mentor = {
   name: string;
@@ -37,64 +37,86 @@ const mentors: Mentor[] = [
   }
 ];
 
-const Mentors = () => {
-  const [flipped, setFlipped] = useState<boolean[]>(Array(mentors.length).fill(false));
+const MentorCard = ({ mentor }: { mentor: Mentor }) => {
+  const [flipped, setFlipped] = useState(false);
 
-  const handleFlip = (index: number) => {
-    const newFlipped = [...flipped];
-    newFlipped[index] = !newFlipped[index];
-    setFlipped(newFlipped);
+  // Only toggle the card flip on devices that don't support hover (i.e. mobile/touch devices)
+  const handleCardClick = () => {
+    if (window.matchMedia("(hover: none)").matches) {
+      setFlipped((prev) => !prev);
+    }
   };
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white py-16">
+    <div
+      className="relative w-full perspective-1000 group"
+      onClick={handleCardClick}
+    >
+      <div
+        className={`relative w-full h-[400px] sm:h-[500px] transition-transform duration-700 transform ${
+          flipped ? "rotate-y-180" : ""
+        } group-hover:rotate-y-180`}
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        {/* Front Face */}
+        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg rounded-2xl flex flex-col items-center justify-between p-6 text-center border border-blue-500">
+          <div className="flex flex-col items-center">
+            <img
+              src={mentor.image}
+              alt={mentor.name}
+              className="w-48 h-48 md:w-56 md:h-56 rounded-xl border-4 border-blue-400 shadow-lg mb-4"
+            />
+            <h2 className="text-xl md:text-2xl font-bold text-white">{mentor.name}</h2>
+            <p className="text-blue-300 text-lg md:text-xl font-medium">{mentor.role}</p>
+            <p className="text-gray-300 text-sm md:text-base mt-2 px-4">{mentor.bio}</p>
+          </div>
+          <a
+            href={mentor.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute bottom-2 right-2 text-blue-500 hover:text-blue-600"
+          >
+            <FaLinkedin size={24} />
+          </a>
+        </div>
+
+        {/* Back Face */}
+        <div
+          className="absolute w-full h-full backface-hidden bg-gray-800 rounded-2xl shadow-lg flex flex-col items-center justify-center p-6 text-center rotate-y-180 border border-gray-600"
+        >
+          <h3 className="text-lg md:text-xl font-bold text-white mb-4">Details</h3>
+          <div className="text-gray-400 text-sm md:text-base leading-relaxed px-4 mb-6">
+            {mentor.details.split('. ').map((sentence, i) => (
+              <p key={i} className="mb-2 last:mb-0">
+                {sentence.trim()}
+                {i !== mentor.details.split('. ').length - 1 && '.'}
+              </p>
+            ))}
+          </div>
+          <a
+            href={mentor.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-blue-500 text-white rounded-full text-sm md:text-base font-semibold flex items-center gap-2 shadow-md hover:bg-blue-600 transition"
+          >
+            <FaLinkedin /> Connect
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Mentors = () => {
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white py-16 relative z-10">
       <h1 className="text-4xl font-extrabold text-blue-400 mb-10 uppercase tracking-wider text-center">
         Meet Our Mentors
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-5xl">
-        {mentors.map((mentor, index: number) => (
-          <div key={index} className="relative w-full perspective-1000">
-            <div
-              className={`relative w-full h-[500px] transition-transform duration-700 transform ${
-                flipped[index] ? "rotate-y-180" : ""
-              }`}
-              style={{ transformStyle: "preserve-3d" }}
-            >
-
-              <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg rounded-2xl flex flex-col items-center justify-center p-6 text-center border border-blue-500">
-                <img
-                  src={mentor.image}
-                  alt={mentor.name}
-                  className="w-50 h-61 rounded-xl border-4 border-blue-400 shadow-lg"
-                />
-                <h2 className="mt-4 text-2xl font-bold text-white">{mentor.name}</h2>
-                <p className="text-blue-300 text-lg font-medium">{mentor.role}</p>
-                <p className="text-gray-300 text-sm mt-2 px-4">{mentor.bio}</p>
-                <a
-                  href={mentor.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full text-sm font-semibold flex items-center gap-2 shadow-md hover:bg-blue-600 transition"
-                >
-                  <FaLinkedin /> Connect
-                </a>
-              </div>
-
-              <div
-                className="absolute w-full h-full backface-hidden bg-gray-800 rounded-2xl shadow-lg flex flex-col items-center justify-center p-6 text-center rotate-y-180 border border-gray-600"
-              >
-                <p className="text-gray-300 text-sm px-4">{mentor.details}</p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => handleFlip(index)}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full text-sm font-semibold block mx-auto shadow-md hover:bg-blue-600 transition"
-            >
-              Flip
-            </button>
-          </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-5xl mx-auto">
+        {mentors.map((mentor, index) => (
+          <MentorCard key={index} mentor={mentor} />
         ))}
       </div>
     </section>

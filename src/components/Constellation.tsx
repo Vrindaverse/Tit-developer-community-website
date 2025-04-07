@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-const INITIAL_STARS = 100;
-const MAX_STARS = 250;
+// Adjusted constants for mobile view
+const INITIAL_STARS = window.innerWidth < 768 ? 30 : 100; // Less stars for mobile
+const MAX_STARS = window.innerWidth < 768 ? 60 : 250; // Less stars for mobile
 const MAX_DISTANCE = 120;
 const STAR_SPEED = 0.2;
 const FLOAT_SPEED = -0.05;

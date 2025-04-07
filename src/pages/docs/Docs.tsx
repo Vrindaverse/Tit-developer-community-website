@@ -1,353 +1,850 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 const DocsHome = () => {
   const [displayText, setDisplayText] = useState("");
-  const fullText = `Welcome to TIT Dev Docs - Your Comprehensive Technology Resource Hub
+  const [activeTab, setActiveTab] = useState("home");
+  const [commandHistory, setCommandHistory] = useState<
+    { cmd: string; user?: string; host?: string; time?: string; output?: string; ai: boolean }[]
+  >([]);
+  const [currentCommand, setCurrentCommand] = useState("");
+  const [aiThinking, setAiThinking] = useState(false);
+  const [user] = useState("dev");
+  const [host] = useState("knowledge-base");
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const terminalRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
 
-Explore curated learning paths, expert resources, and industry insights to accelerate your development career.`;
+  // MacBook Terminal color scheme
+  const colors = {
+    primary: "#0ff",
+    secondary: "#f0f",
+    accent: "#ff0",
+    text: "#e0e0ff",
+    bg: "#0a0a12",
+    highlight: "rgba(0, 255, 255, 0.1)",
+    error: "#f55",
+    success: "#5f5"
+  };
+
+  const fullText = `DevTerminal v3.2.0 - Developer Knowledge Base
+[${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}]
+> Booting documentation engine...
+> Mounting knowledge partitions...
+> Syncing with remote repositories...
+> Initializing AI assistance...
+System ready. Type 'help' for commands`;
 
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
       setDisplayText(fullText.substring(0, i));
       i++;
-      if (i > fullText.length) clearInterval(interval);
-    }, 30);
+      if (i > fullText.length) {
+        clearInterval(interval);
+        setTimeout(() => {
+          setCommandHistory(prev => [...prev, 
+            { 
+              cmd: "welcome", 
+              output: `Welcome to DevTerminal. Authenticated as ${user}@${host}`,
+              ai: true 
+            }
+          ]);
+        }, 300);
+      }
+    }, 5); // Faster typing speed
     return () => clearInterval(interval);
   }, []);
 
-  const learningPaths = [
+  // Auto-focus input
+  useEffect(() => {
+    const handleClick = () => inputRef.current?.focus();
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, []);
+
+  const simulateAIResponse = (cmd: string) => {
+    setAiThinking(true);
+    return new Promise<string>(resolve => {
+      setTimeout(() => {
+        let output = "";
+        let newTab = activeTab;
+        switch(cmd.toLowerCase()) {
+          case "help":
+          case "?":
+            output = `Available commands:
+help/?          Show this help
+docs/ls         List documentation modules
+roadmap         Show learning roadmap
+search <query>  Search documentation
+clear/cls       Clear terminal
+about           System information
+exit            Terminal session cannot be exited`;
+            break;
+          case "docs":
+          case "ls":
+            output = "Available documentation modules:";
+            newTab = "docs";
+            break;
+          case "roadmap":
+            output = "Loading learning roadmap...";
+            newTab = "roadmap";
+            break;
+          case "about":
+            output = `DevTerminal v3.2.0
+Developer Knowledge Base - Part of the Developer Community
+Welcome to the DevTerminal, your go-to resource for comprehensive developer documentation and learning materials. This terminal is designed to provide developers with easy access to a wide range of documentation modules, learning roadmaps, and recommended resources.
+Key Features:
+• Modular Documentation: Access detailed guides on various topics such as Web Development, Android Development, AI/ML, Data Structures, and Git & VCS.
+• Learning Roadmaps: Track your progress through structured learning paths tailored to different technologies and domains.
+• AI Assistance: Get real-time assistance and answers to your queries directly within the terminal.
+• Interactive Modules: Click on modules to navigate to detailed documentation pages.
+Join our community of developers and stay updated with the latest knowledge and best practices in software development.`;
+            break;
+          case "exit":
+            output = "Terminal session cannot be exited. Type 'help' for available commands.";
+            break;
+          case "open --module web":
+            output = `Opening Web Development module...`;
+            navigate("/docs/web-dev");
+            break;
+          case "open --module android":
+            output = `Opening Android Development module...`;
+            navigate("/docs/android");
+            break;
+          case "open --module ai-ml":
+            output = `Opening AI/ML module...`;
+            navigate("/docs/ai-ml");
+            break;
+          case "open --module dsa":
+            output = `Opening Data Structures module...`;
+            navigate("/docs/dsa");
+            break;
+          case "open --module git":
+            output = `Opening Git & VCS module...`;
+            navigate("/docs/git");
+            break;
+          case "clear":
+          case "cls":
+            output = "";
+            setCommandHistory([]);
+            break;
+          case "back":
+            if (activeTab !== "home") {
+              output = "Returning to documentation modules...";
+              setActiveTab("docs");
+            } else {
+              output = "Already in home directory.";
+            }
+            break;
+          default:
+            if (cmd.startsWith("search ")) {
+              const query = cmd.substring(7).trim();
+              if (!query) {
+                output = `Please provide a search query. Usage: search <query>`;
+              } else {
+                output = `Search results for "${query}":
+• 15 relevant documentation files
+• 3 code examples available
+• 2 related projects found`;
+              }
+            } else {
+              output = `Command not found: ${cmd}. Type 'help' for available commands`;
+            }
+        }
+        if (newTab !== activeTab) setActiveTab(newTab);
+        resolve(output);
+        setAiThinking(false);
+      }, 500 + Math.random() * 1000);
+    });
+  };
+
+  const handleCommand = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const cmd = currentCommand.trim();
+      if (!cmd) return;
+      // Add user command to history
+      setCommandHistory(prev => [...prev, { 
+        cmd, 
+        user, 
+        host, 
+        time: new Date().toLocaleTimeString(),
+        ai: false 
+      }]);
+      if (cmd.toLowerCase() === "clear" || cmd.toLowerCase() === "cls") {
+        setCommandHistory([]);
+        setCurrentCommand("");
+        return;
+      }
+      // Get AI response
+      const output = await simulateAIResponse(cmd);
+      // Add AI response to history with all required fields
+      setCommandHistory(prev => [...prev, { 
+        cmd: "", // You can set this to a specific command if needed
+        user: undefined,
+        host: undefined,
+        time: new Date().toLocaleTimeString(),
+        output, 
+        ai: true 
+      }]);
+      setCurrentCommand("");
+      // Auto-scroll to bottom
+      setTimeout(() => {
+        if (terminalRef.current) {
+          terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+        }
+      }, 50);
+    }
+  };
+
+  const documentationModules = [
     {
-      title: "Data Structures & Algorithms",
-      path: "/docs/dsa",
-      icon: "🧠",
-      description:
-        "Master the foundation of efficient problem-solving with comprehensive DSA resources.",
-      highlights: [
-        "Algorithmic thinking patterns",
-        "Complexity analysis",
-        "Competitive programming techniques",
-        "Real-world system design applications"
-      ],
-      careerPaths: [
-        "Software Engineer",
-        "Algorithm Specialist",
-        "Quantitative Developer",
-        "Systems Architect"
-      ]
-    },
-    {
+      id: "web",
       title: "Web Development",
       path: "/docs/web-dev",
       icon: "🌐",
-      description:
-        "Full-stack development from fundamentals to advanced modern architectures.",
-      highlights: [
-        "React/Next.js frameworks",
-        "Node.js & serverless backends",
-        "Web performance optimization",
-        "Progressive Web Apps & Web3"
+      description: "Modern web frameworks, tools, and best practices",
+      progress: 85,
+      commands: [
+        "start --react-app",
+        "build --production",
+        "test --coverage"
       ],
-      careerPaths: [
-        "Frontend Developer",
-        "Full Stack Engineer",
-        "UX Engineer",
-        "Web3 Developer"
-      ]
+      tags: ["React", "Node.js", "CSS", "APIs"]
     },
     {
-      title: "Machine Learning & AI",
-      path: "/docs/ai-ml",
-      icon: "🤖",
-      description:
-        "From fundamentals to cutting-edge AI implementations and ethical considerations.",
-      highlights: [
-        "Deep learning architectures",
-        "NLP & computer vision",
-        "MLOps & production deployment",
-        "AI ethics & governance"
-      ],
-      careerPaths: [
-        "ML Engineer",
-        "Data Scientist",
-        "AI Researcher",
-        "Computer Vision Specialist"
-      ]
-    },
-    {
-      title: "Mobile Development",
-      path: "/docs/mobile",
+      id: "android",
+      title: "Android Development",
+      path: "/docs/android",
       icon: "📱",
-      description:
-        "Cross-platform and native mobile development with modern toolchains.",
-      highlights: [
-        "Android with Kotlin/Jetpack",
-        "iOS with SwiftUI",
-        "React Native cross-platform",
-        "Mobile CI/CD pipelines"
+      description: "Native Android app development with Kotlin/Java",
+      progress: 70,
+      commands: [
+        "run --emulator",
+        "build --release",
+        "test --instrumentation"
       ],
-      careerPaths: [
-        "Android Developer",
-        "iOS Developer",
-        "Mobile Architect",
-        "UX Engineer"
-      ]
+      tags: ["Kotlin", "Jetpack", "Compose", "Room"]
     },
     {
-      title: "DevOps & Cloud",
-      path: "/docs/devops",
-      icon: "☁️",
-      description:
-        "Infrastructure as code, cloud architectures, and deployment automation.",
-      highlights: [
-        "Docker & Kubernetes",
-        "AWS/GCP/Azure services",
-        "CI/CD pipelines",
-        "Infrastructure automation"
+      id: "ai-ml",
+      title: "AI/ML",
+      path: "/docs/ai-ml",
+      icon: "🧠",
+      description: "Machine learning models and neural networks",
+      progress: 60,
+      commands: [
+        "train --model",
+        "evaluate --metrics",
+        "predict --input"
       ],
-      careerPaths: [
-        "DevOps Engineer",
-        "Cloud Architect",
-        "Site Reliability Engineer",
-        "Platform Engineer"
-      ]
+      tags: ["TensorFlow", "PyTorch", "NLP", "CV"]
     },
     {
-      title: "Cybersecurity",
-      path: "/docs/security",
-      icon: "🔒",
-      description:
-        "Offensive and defensive security practices for modern applications.",
-      highlights: [
-        "Ethical hacking techniques",
-        "Secure coding practices",
-        "Cryptography fundamentals",
-        "Threat modeling"
+      id: "dsa",
+      title: "Data Structures",
+      path: "/docs/dsa",
+      icon: "∑",
+      description: "Algorithms and problem solving techniques",
+      progress: 75,
+      commands: [
+        "solve --leetcode",
+        "optimize --complexity",
+        "visualize --algorithm"
       ],
-      careerPaths: [
-        "Security Engineer",
-        "Penetration Tester",
-        "Security Architect",
-        "Security Analyst"
-      ]
+      tags: ["Arrays", "Graphs", "DP", "Sorting"]
+    },
+    {
+      id: "git",
+      title: "Git & VCS",
+      path: "/docs/git",
+      icon: "⎇",
+      description: "Version control and collaborative workflows",
+      progress: 95,
+      commands: [
+        "commit --message",
+        "rebase --interactive",
+        "merge --conflict"
+      ],
+      tags: ["GitHub", "CI/CD", "Rebase", "Hooks"]
     }
   ];
 
-  const roadmapStages = [
-    {
-      stage: "Foundation",
-      duration: "3-6 months",
-      focus: "Core programming concepts",
-      topics: [
-        "Programming fundamentals (variables, control structures)",
-        "Basic data structures (arrays, strings, linked lists)",
-        "Version control with Git",
-        "Simple algorithms (searching, sorting)",
-        "Basic command line usage"
-      ]
-    },
-    {
-      stage: "Intermediate",
-      duration: "6-12 months",
-      focus: "Specialization & depth",
-      topics: [
-        "Advanced data structures (trees, graphs)",
-        "System design fundamentals",
-        "Database design & optimization",
-        "API development",
-        "Testing methodologies"
-      ]
-    },
-    {
-      stage: "Advanced",
-      duration: "12-18 months",
-      focus: "Production-grade development",
-      topics: [
-        "Distributed systems",
-        "Cloud architecture patterns",
-        "Performance optimization",
-        "Security best practices",
-        "CI/CD pipelines"
-      ]
-    },
-    {
-      stage: "Expert",
-      duration: "18-24+ months",
-      focus: "Architecture & leadership",
-      topics: [
-        "Large-scale system design",
-        "Technical leadership",
-        "Emerging tech evaluation",
-        "Mentorship & knowledge sharing",
-        "Open source contributions"
-      ]
-    }
-  ];
+  const learningRoadmap = {
+    tracks: [
+      {
+        name: "Web Development",
+        stages: [
+          {
+            name: "Fundamentals",
+            topics: ["HTML5", "CSS3", "JavaScript ES6+"],
+            status: "complete"
+          },
+          {
+            name: "Frontend",
+            topics: ["React", "State Management", "Component Design"],
+            status: "complete"
+          },
+          {
+            name: "Backend",
+            topics: ["Node.js", "Express", "REST APIs"],
+            status: "complete"
+          },
+          {
+            name: "Advanced",
+            topics: ["GraphQL", "WebSockets", "WebAssembly"],
+            status: "in-progress"
+          }
+        ]
+      },
+      {
+        name: "Android",
+        stages: [
+          {
+            name: "Basics",
+            topics: ["Kotlin", "Android Studio", "UI Components"],
+            status: "complete"
+          },
+          {
+            name: "Architecture",
+            topics: ["MVVM", "Jetpack", "Navigation"],
+            status: "in-progress"
+          },
+          {
+            name: "Advanced",
+            topics: ["Compose", "Coroutines", "DI"],
+            status: "pending"
+          },
+          {
+            name: "Publishing",
+            topics: ["Play Store", "Monetization", "Analytics"],
+            status: "pending"
+          }
+        ]
+      },
+      {
+        name: "Computer Science",
+        stages: [
+          {
+            name: "DSA",
+            topics: ["Arrays", "Trees", "Graphs", "DP"],
+            status: "in-progress"
+          },
+          {
+            name: "System Design",
+            topics: ["Scalability", "DB Design", "Caching"],
+            status: "pending"
+          },
+          {
+            name: "OS/Networking",
+            topics: ["Processes", "Threads", "TCP/IP"],
+            status: "pending"
+          },
+          {
+            name: "Security",
+            topics: ["Cryptography", "OWASP", "Auth"],
+            status: "pending"
+          }
+        ]
+      }
+    ],
+    resources: [
+      { name: "MDN Web Docs", url: "https://developer.mozilla.org" },
+      { name: "Android Developers", url: "https://developer.android.com" },
+      { name: "LeetCode", url: "https://leetcode.com" },
+      { name: "freeCodeCamp", url: "https://freecodecamp.org" }
+    ]
+  };
+
+  const renderPrompt = () => (
+    <div className="flex items-baseline">
+      <span style={{ color: colors.primary }} className="mr-1">{user}@</span>
+      <span style={{ color: colors.secondary }} className="mr-1">{host}</span>
+      <span style={{ color: colors.accent }} className="mr-1">:~$</span>
+    </div>
+  );
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-200 py-16 px-4 sm:px-6 flex flex-col items-center">
-      {/* Custom styles */}
-      <style>
-        {`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+    <div className="min-h-screen" style={{ backgroundColor: colors.bg, color: colors.text }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap');
+        body {
+          font-family: 'Ubuntu Mono', monospace;
+          background: ${colors.bg};
+          color: ${colors.text};
+          line-height: 1.5;
+        }
+        .terminal-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .terminal-scrollbar::-webkit-scrollbar-track {
+          background: ${colors.bg};
+        }
+        .terminal-scrollbar::-webkit-scrollbar-thumb {
+          background: ${colors.primary};
+          border-radius: 4px;
+        }
+        .glow-text {
+          text-shadow: 0 0 4px ${colors.primary}, 0 0 8px rgba(0, 255, 255, 0.2);
+        }
+        .module-card {
+          border: 1px solid ${colors.primary}30;
+          background: rgba(10, 20, 30, 0.5);
+          transition: all 0.3s ease;
+          margin-bottom: 1rem;
+        }
+        .module-card:hover {
+          border-color: ${colors.primary};
+          box-shadow: 0 0 15px ${colors.primary}40;
+          transform: translateY(-2px);
+          background: rgba(0, 10, 20, 0.7);
+        }
+        .module-card h4 {
+          margin-bottom: 0.5rem;
+        }
+        .module-card p {
+          margin-bottom: 0.5rem;
+        }
+        .module-card ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        .module-card li {
+          margin-bottom: 0.25rem;
+        }
+        .command-line {
+          background: rgba(0, 10, 20, 0.7);
+          border-left: 3px solid ${colors.primary};
+          padding: 0.5rem;
+          margin-bottom: 1rem;
+        }
+        .ai-response {
+          border-left: 3px solid ${colors.secondary};
+          background: rgba(0, 10, 20, 0.3);
+          padding: 0.5rem;
+          margin-bottom: 1rem;
+        }
+        .cursor-blink {
+          animation: blink 1s infinite;
+        }
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+        .code-editor-terminal {
+          background: #1e1e2f;
+          border: 1px solid #333;
+          border-radius: 8px;
+          padding: 16px;
+          font-family: 'Ubuntu Mono', monospace;
+          color: #e0e0ff;
+          line-height: 1.5;
+        }
+        .code-editor-terminal pre {
+          margin: 0;
+        }
+        .code-editor-terminal .prompt {
+          color: #0ff;
+        }
+        .code-editor-terminal .command {
+          color: #fff;
+        }
+        .code-editor-terminal .output {
+          color: #f0f;
+        }
+        .code-editor-terminal .ai-response {
+          background: rgba(0, 10, 20, 0.3);
+        }
+        .code-editor-terminal .ai-thinking {
+          color: #f0f;
+        }
+        .code-editor-terminal .footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 16px;
+          font-size: 12px;
+          color: #0ff;
+        }
+        .footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 16px;
+          font-size: 12px;
+          color: #0ff;
+        }
+        .footer span {
+          margin-right: 8px;
+        }
+        .progress-bar {
+          background: rgba(0, 0, 0, 0.5);
+          border-radius: 8px;
+          overflow: hidden;
+          margin-top: 0.5rem;
+        }
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, ${colors.primary}, ${colors.secondary});
+        }
+        .command-input {
+          border: none;
+          outline: none;
+          background: transparent;
+          color: inherit;
+          font-family: inherit;
+          font-size: inherit;
+          line-height: inherit;
+          padding: 0;
+          width: 100%;
+        }
+        .mobile-terminal {
+          display: none;
+        }
+        @media (max-width: 768px) {
+          .desktop-terminal {
+            display: none;
           }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: #1E1E2E;
+          .mobile-terminal {
+            display: block;
           }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #4B5563;
-            border-radius: 4px;
-            border: 2px solid #1E1E2E;
+          .container {
+            padding-top: 64px; /* Adjust this value based on your navbar height */
           }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background-color: #6366F1;
-          }
-          .terminal-header {
-            background: linear-gradient(90deg, #111827 0%, #1F2937 100%);
-          }
-          .path-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2);
-          }
-        `}
-      </style>
+        }
+        .roadmap-track {
+          border-left: 2px solid ${colors.primary}50;
+          padding-left: 16px;
+        }
+        .roadmap-track h4 {
+          margin-bottom: 16px;
+        }
+        .roadmap-stage {
+          position: relative;
+          margin-bottom: 16px;
+        }
+        .roadmap-stage:before {
+          content: '';
+          position: absolute;
+          left: -21px;
+          top: 8px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          border: 2px solid ${colors.primary};
+        }
+        .roadmap-stage.complete:before {
+          background: ${colors.success};
+          border-color: ${colors.success};
+        }
+        .roadmap-stage.in-progress:before {
+          background: ${colors.accent};
+          border-color: ${colors.accent};
+        }
+        .roadmap-stage.pending:before {
+          background: transparent;
+          border-color: ${colors.secondary};
+        }
+        .roadmap-resources {
+          margin-top: 24px;
+        }
+        .roadmap-resources h4 {
+          margin-bottom: 16px;
+        }
+        .roadmap-resources ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        .roadmap-resources li {
+          margin-bottom: 8px;
+        }
+        .roadmap-resources a {
+          display: block;
+          padding: 8px 12px;
+          border: 1px solid ${colors.primary}30;
+          border-radius: 8px;
+          transition: background 0.3s ease;
+        }
+        .roadmap-resources a:hover {
+          background: ${colors.highlight};
+        }
+        .roadmap-resources a span {
+          display: block;
+        }
+        .roadmap-resources a .url {
+          font-size: 0.875rem;
+          color: ${colors.secondary};
+        }
+      `}</style>
 
-      <div className="w-full max-w-7xl mb-16 text-center">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="inline-block px-4 py-2 mb-6 rounded-full bg-gray-800 border border-gray-700 text-emerald-400 text-sm font-mono"
-        >
-          v2.1.0 - Updated: {new Date().toLocaleDateString()}
-        </motion.div>
-        
-        <motion.h1 
-          className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-        >
-          TIT Developer Documentation
-        </motion.h1>
-        
-        <motion.div 
-          className="max-w-3xl mx-auto text-lg text-gray-300 font-mono h-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 1 }}
-        >
-          {displayText}
-          <span className="ml-1 animate-pulse">▌</span>
-        </motion.div>
-      </div>
-
-      {/* Learning Paths Grid */}
-      <div className="w-full max-w-7xl mb-20">
-        <h2 className="text-2xl font-bold mb-8 text-emerald-400 flex items-center">
-          <span className="mr-2">📚</span> Learning Paths
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {learningPaths.map((path, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              whileHover={{ scale: 1.02 }}
-              className="path-card bg-gray-800 rounded-xl border border-gray-700 overflow-hidden transition-all duration-300"
-            >
-              <Link to={path.path} className="block h-full">
-                <div className="p-6 h-full flex flex-col">
-                  <div className="flex items-start mb-4">
-                    <span className="text-3xl mr-3">{path.icon}</span>
-                    <h3 className="text-xl font-bold text-gray-100">{path.title}</h3>
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Desktop Terminal */}
+        <div className="desktop-terminal">
+          <div 
+            ref={terminalRef}
+            className="terminal-scrollbar code-editor-terminal h-[75vh] overflow-y-auto mb-4"
+            style={{ marginTop: "64px" }} // Position terminal below navbar
+          >
+            <pre className="whitespace-pre-wrap mb-4" style={{ color: colors.accent }}>
+              {displayText}
+              {displayText.length === fullText.length && (
+                <span className="ml-1 inline-block w-2 h-4 bg-white cursor-blink"></span>
+              )}
+            </pre>
+            {commandHistory.map((item, idx) => (
+              <div key={idx} className={`mb-4 pl-4 py-2 rounded ${item.ai ? 'ai-response' : 'command-line'}`}>
+                {!item.output ? (
+                  <div className="flex items-baseline">
+                    {renderPrompt()}
+                    <span className="ml-2 command">{item.cmd}</span>
                   </div>
-                  <p className="text-gray-300 mb-4 flex-grow">{path.description}</p>
-                  
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-emerald-400 mb-2">KEY TOPICS:</h4>
-                    <ul className="text-sm text-gray-400 space-y-1">
-                      {path.highlights.map((item, i) => (
-                        <li key={i} className="flex items-start">
-                          <span className="text-emerald-400 mr-2">•</span>
-                          {item}
+                ) : (
+                  <>
+                    {item.cmd !== "welcome" && (
+                      <div className="flex items-baseline">
+                        {renderPrompt()}
+                        <span className="ml-2 command">{item.cmd}</span>
+                      </div>
+                    )}
+                    <pre className="whitespace-pre-wrap mt-2 output" style={{ 
+                      color: item.ai ? colors.secondary : colors.text,
+                      fontFamily: "'Ubuntu Mono', monospace"
+                    }}>
+                      {item.output}
+                    </pre>
+                  </>
+                )}
+              </div>
+            ))}
+            {aiThinking && (
+              <div className="flex items-center mb-4 pl-4 py-2 text-sm ai-thinking">
+                <div className="mr-2 flex items-center">
+                  <span className="mr-2">Processing</span>
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 rounded-full bg-current pulse"></div>
+                    <div className="w-2 h-2 rounded-full bg-current pulse" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 rounded-full bg-current pulse" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <AnimatePresence>
+              {activeTab === "docs" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-6"
+                >
+                  <h3 className="text-xl mb-6 glow-text" style={{ color: colors.accent }}>
+                    <span className="mr-2">📦</span> Available Documentation Modules
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {documentationModules.map((module, idx) => (
+                      <div 
+                        key={idx}
+                        className="module-card p-4 rounded-lg"
+                        onClick={() => navigate(module.path)}
+                      >
+                        <div className="flex items-start mb-3">
+                          <span className="text-2xl mr-3" style={{ color: colors.primary }}>{module.icon}</span>
+                          <div>
+                            <h4 className="text-lg font-bold" style={{ color: colors.accent }}>{module.title}</h4>
+                            <p className="text-sm" style={{ color: colors.text }}>{module.description}</p>
+                          </div>
+                        </div>
+                        <div className="mb-4">
+                          <div className="flex justify-between text-xs mb-1">
+                            <span>Documentation:</span>
+                            <span>{module.progress}% complete</span>
+                          </div>
+                          <div className="progress-bar h-2 w-full rounded overflow-hidden">
+                            <div 
+                              className="progress-fill h-full rounded" 
+                              style={{ width: `${module.progress}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="mb-3">
+                          <div className="flex flex-wrap gap-1">
+                            {module.tags.map((tag, i) => (
+                              <span 
+                                key={i} 
+                                className="text-xs px-2 py-1 rounded"
+                                style={{ 
+                                  background: 'rgba(0, 0, 0, 0.5)', 
+                                  color: colors.primary 
+                                }}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <h5 className="text-xs mb-2" style={{ color: colors.primary }}>COMMANDS:</h5>
+                          <ul className="space-y-1 text-xs">
+                            {module.commands.map((cmd, i) => (
+                              <li key={i} style={{ color: colors.secondary }}>
+                                <span style={{ color: colors.primary }}>$</span> {cmd}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-6 text-sm" style={{ color: colors.accent }}>
+                    <p>To view a module: <span style={{ color: colors.primary }}>open --module [id]</span></p>
+                  </div>
+                </motion.div>
+              )}
+              {activeTab === "roadmap" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-6"
+                >
+                  <h3 className="text-xl mb-6 glow-text" style={{ color: colors.accent }}>
+                    <span className="mr-2">🧭</span> Learning Roadmap
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                    {learningRoadmap.tracks.map((track, i) => (
+                      <div key={i} className="roadmap-track pl-5">
+                        <h4 className="text-lg font-bold mb-4 flex items-center" style={{ color: colors.primary }}>
+                          <span className="mr-2">{["🌐", "📱", "💻"][i]}</span>
+                          {track.name}
+                        </h4>
+                        <div className="space-y-6">
+                          {track.stages.map((stage, j) => (
+                            <div 
+                              key={j} 
+                              className={`roadmap-stage ${stage.status.replace('-', '')}`}
+                            >
+                              <h5 className="font-bold mb-2" style={{ color: colors.accent }}>{stage.name}</h5>
+                              <ul className="space-y-1 text-sm">
+                                {stage.topics.map((topic, k) => (
+                                  <li key={k} className="flex items-center">
+                                    <span className="mr-2">•</span>
+                                    {topic}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-8">
+                    <h4 className="text-lg font-bold mb-4" style={{ color: colors.primary }}>
+                      <span className="mr-2">📚</span> Recommended Resources
+                    </h4>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {learningRoadmap.resources.map((resource, i) => (
+                        <li key={i}>
+                          <a 
+                            href={resource.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="block p-3 rounded hover:bg-blue-900/10 transition-colors"
+                            style={{ border: `1px solid ${colors.primary}30` }}
+                          >
+                            <span className="text-cyan-300">{resource.name}</span>
+                            <div className="text-xs text-cyan-500/70 mt-1 truncate">{resource.url}</div>
+                          </a>
                         </li>
                       ))}
                     </ul>
                   </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-semibold text-cyan-400 mb-2">CAREER PATHS:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {path.careerPaths.map((career, i) => (
-                        <span key={i} className="text-xs px-2 py-1 rounded-full bg-gray-700 text-gray-300">
-                          {career}
+                  <div className="mt-6 text-sm" style={{ color: colors.accent }}>
+                    <p>To track progress: <span style={{ color: colors.primary }}>progress --update [topic]</span></p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <div className="flex items-baseline mt-6">
+              {renderPrompt()}
+              <input
+                ref={inputRef}
+                type="text"
+                value={currentCommand}
+                onChange={(e) => setCurrentCommand(e.target.value)}
+                onKeyDown={handleCommand}
+                className="command-input flex-grow"
+                style={{ color: colors.text }}
+                autoFocus
+              />
+            </div>
+          </div>
+          <div className="footer">
+            <span>System: <span style={{ color: colors.success }}>ONLINE</span></span>
+            <span>Docs: <span style={{ color: colors.success }}>SYNCED</span></span>
+            <span>Session: <span style={{ color: colors.accent }}>ACTIVE</span></span>
+          </div>
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="mobile-terminal">
+          <div className="mt-6">
+            <h3 className="text-xl mb-6 glow-text" style={{ color: colors.accent }}>
+              <span className="mr-2">📦</span> Available Documentation Modules
+            </h3>
+            <div className="grid grid-cols-1 gap-4">
+              {documentationModules.map((module, idx) => (
+                <motion.div
+                  key={idx}
+                  className="module-card p-4 rounded-lg"
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => navigate(module.path)}
+                >
+                  <div className="flex items-start mb-3">
+                    <span className="text-2xl mr-3" style={{ color: colors.primary }}>{module.icon}</span>
+                    <div>
+                      <h4 className="text-lg font-bold" style={{ color: colors.accent }}>{module.title}</h4>
+                      <p className="text-sm" style={{ color: colors.text }}>{module.description}</p>
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <div className="flex justify-between text-xs mb-1">
+                      <span>Documentation:</span>
+                      <span>{module.progress}% complete</span>
+                    </div>
+                    <div className="progress-bar h-2 w-full rounded overflow-hidden">
+                      <div 
+                        className="progress-fill h-full rounded" 
+                        style={{ width: `${module.progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <div className="flex flex-wrap gap-1">
+                      {module.tags.map((tag, i) => (
+                        <span 
+                          key={i} 
+                          className="text-xs px-2 py-1 rounded"
+                          style={{ 
+                            background: 'rgba(0, 0, 0, 0.5)', 
+                            color: colors.primary 
+                          }}
+                        >
+                          {tag}
                         </span>
                       ))}
                     </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Professional Roadmap */}
-      <div className="w-full max-w-7xl">
-        <h2 className="text-2xl font-bold mb-8 text-cyan-400 flex items-center">
-          <span className="mr-2">🗺️</span> Professional Development Roadmap
-        </h2>
-        
-        <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
-          <div className="terminal-header px-6 py-4 border-b border-gray-700">
-            <div className="flex items-center">
-              <div className="flex space-x-2 mr-4">
-                <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
-                <span className="w-3 h-3 rounded-full bg-green-500"></span>
-              </div>
-              <span className="font-mono text-sm text-gray-300">career_roadmap.sh</span>
-            </div>
-          </div>
-          
-          <div className="p-6">
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute left-4 top-0 h-full w-0.5 bg-gradient-to-b from-emerald-500 to-cyan-500"></div>
-              
-              {roadmapStages.map((stage, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.2, duration: 0.5 }}
-                  className="relative pl-12 pb-8 last:pb-0 group"
-                >
-                  {/* Timeline dot */}
-                  <div className="absolute left-0 w-8 h-8 rounded-full flex items-center justify-center bg-gray-700 border-2 border-emerald-400 group-hover:bg-emerald-400 transition-colors">
-                    <span className="text-xs font-bold text-emerald-400 group-hover:text-gray-800">{index + 1}</span>
-                  </div>
-                  
-                  <div className="bg-gray-700/50 rounded-lg p-5 border border-gray-600 group-hover:border-emerald-400/30 transition-all">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3">
-                      <h3 className="text-lg font-bold text-gray-100">{stage.stage} Stage</h3>
-                      <span className="text-sm text-emerald-400 bg-gray-800 px-3 py-1 rounded-full">{stage.duration}</span>
-                    </div>
-                    <p className="text-sm text-gray-300 mb-4"><span className="font-semibold text-cyan-400">Focus:</span> {stage.focus}</p>
-                    
-                    <h4 className="text-sm font-semibold text-gray-400 mb-2">KEY COMPETENCIES:</h4>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {stage.topics.map((topic, i) => (
-                        <li key={i} className="flex items-start text-sm text-gray-400">
-                          <span className="text-emerald-400 mr-2">▹</span>
-                          {topic}
+                  <div>
+                    <h5 className="text-xs mb-2" style={{ color: colors.primary }}>COMMANDS:</h5>
+                    <ul className="space-y-1 text-xs">
+                      {module.commands.map((cmd, i) => (
+                        <li key={i} style={{ color: colors.secondary }}>
+                          <span style={{ color: colors.primary }}>$</span> {cmd}
                         </li>
                       ))}
                     </ul>
@@ -355,30 +852,69 @@ Explore curated learning paths, expert resources, and industry insights to accel
                 </motion.div>
               ))}
             </div>
+            <div className="mt-6 text-sm" style={{ color: colors.accent }}>
+              <p>To view a module: <span style={{ color: colors.primary }}>open --module [id]</span></p>
+            </div>
+
+            {/* Mobile Roadmap Section */}
+            <div className="mt-12">
+              <h3 className="text-xl mb-6 glow-text" style={{ color: colors.accent }}>
+                <span className="mr-2">🧭</span> Learning Roadmap
+              </h3>
+              {learningRoadmap.tracks.map((track, i) => (
+                <div key={i} className="roadmap-track">
+                  <h4 className="text-lg font-bold mb-4 flex items-center" style={{ color: colors.primary }}>
+                    <span className="mr-2">{["🌐", "📱", "💻"][i]}</span>
+                    {track.name}
+                  </h4>
+                  <div className="space-y-6">
+                    {track.stages.map((stage, j) => (
+                      <div 
+                        key={j} 
+                        className={`roadmap-stage ${stage.status.replace('-', '')}`}
+                      >
+                        <h5 className="font-bold mb-2" style={{ color: colors.accent }}>{stage.name}</h5>
+                        <ul className="space-y-1 text-sm">
+                          {stage.topics.map((topic, k) => (
+                            <li key={k} className="flex items-center">
+                              <span className="mr-2">•</span>
+                              {topic}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile Resources Section */}
+            <div className="roadmap-resources">
+              <h4 className="text-lg font-bold mb-4" style={{ color: colors.primary }}>
+                <span className="mr-2">📚</span> Recommended Resources
+              </h4>
+              <ul>
+                {learningRoadmap.resources.map((resource, i) => (
+                  <li key={i}>
+                    <a 
+                      href={resource.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="block p-3 rounded hover:bg-blue-900/10 transition-colors"
+                      style={{ border: `1px solid ${colors.primary}30` }}
+                    >
+                      <span className="text-cyan-300">{resource.name}</span>
+                      <div className="url text-xs text-cyan-500/70 mt-1 truncate">{resource.url}</div>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-
-      <motion.div 
-        className="mt-20 text-center"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <h3 className="text-2xl font-bold text-gray-100 mb-4">Ready to start your journey?</h3>
-        <p className="text-gray-400 mb-6 max-w-2xl mx-auto">Join thousands of developers who've accelerated their careers with our structured learning paths.</p>
-        <Link 
-          to="/docs/getting-started" 
-          className="inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-600 text-white font-medium hover:shadow-lg hover:shadow-emerald-500/20 transition-all"
-        >
-          Get Started Now
-          <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-          </svg>
-        </Link>
-      </motion.div>
-    </section>
+    </div>
   );
 };
 
