@@ -32,8 +32,8 @@ const Home = () => {
 };
 
 // 🌌 Dark Blue Space Background with Twinkling Stars
-const StarBackground = () => (
-  <div className="relative w-full h-[50px] overflow-hidden">
+export const StarBackground = () => (
+  <div className="relative w-full h-full overflow-hidden">
     {/* Twinkling Stars */}
     {Array.from({ length: 50 }).map((_, i) => (
       <motion.div

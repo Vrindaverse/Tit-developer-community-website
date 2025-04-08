@@ -16,21 +16,53 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { name: "Home", path: "/", icon: <Home size={24} className="text-white" /> },
-    { name: "Mentors", path: "/mentors", icon: <Users size={24} className="text-white" /> },
-    { name: "Events", path: "/events", icon: <Calendar size={24} className="text-white" /> },
-    { name: "Hall of Fame", path: "/hall-of-fame", icon: <Trophy size={24} className="text-white" /> },
-    { name: "Testimonials", path: "/testimonials", icon: <MessageSquare size={24} className="text-white" /> },
-    { name: "FAQs", path: "/faqs", icon: <HelpCircle size={24} className="text-white" /> },
-    { name: "Docs", path: "/docs", icon: <FileText size={24} className="text-white" /> },
+    {
+      name: "Home",
+      path: "/",
+      icon: <Home size={24} className="text-white" />,
+    },
+    {
+      name: "Mentors",
+      path: "/mentors",
+      icon: <Users size={24} className="text-white" />,
+    },
+    {
+      name: "Events",
+      path: "/events",
+      icon: <Calendar size={24} className="text-white" />,
+    },
+    {
+      name: "Hall of Fame",
+      path: "/hall-of-fame",
+      icon: <Trophy size={24} className="text-white" />,
+    },
+    {
+      name: "Testimonials",
+      path: "/testimonials",
+      icon: <MessageSquare size={24} className="text-white" />,
+    },
+    {
+      name: "FAQs",
+      path: "/faqs",
+      icon: <HelpCircle size={24} className="text-white" />,
+    },
+    {
+      name: "Docs",
+      path: "/docs",
+      icon: <FileText size={24} className="text-white" />,
+    },
   ];
 
   return (
-    <nav className="fixed top-0 w-full px-6 py-4 bg-gradient-to-r from-gray-900 via-gray-800 to-black border-b border-gray-700 z-50 shadow-xl">
+    <nav className="fixed top-0 w-full px-6 py-4 bg-black/30 backdrop-blur-md border-b border-gray-700 z-50 shadow-xl">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo and TDC Text */}
         <Link to="/" className="flex items-center space-x-3">
-          <img src={symbol} alt="TDC Logo" className="w-10 h-10 object-contain" />
+          <img
+            src={symbol}
+            alt="TDC Logo"
+            className="w-10 h-10 object-contain"
+          />
           <span className="text-white text-3xl font-orbitron font-extrabold tracking-widest">
             TDC
           </span>
