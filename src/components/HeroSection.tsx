@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import Constellation from "./Constellation";
 
 export default function HeroSection() {
-  const initialSnippet = "beep beep..beeeeeppp......Initializing TIT Developer Community AI...";
+  const initialSnippet =
+    "beep beep..beeeeeppp......Initializing TIT Developer Community AI...";
 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showMainSnippet, setShowMainSnippet] = useState(false);
 
-  const mainSnippet = isMobile ? `
+  const mainSnippet = isMobile
+    ? `
   {
   "founders of the community": ["Annand Soni", "Ankit Kumar", "Ankit Patel"],
   "mission": "Our goal is to empower engineers through immersive experiences, celestial coding challenges, and futuristic frameworks.",
@@ -21,7 +23,8 @@ export default function HeroSection() {
   }
 }
 
-  ` : `
+  `
+    : `
   {
   "founders of the community": ["Annand Soni", "Ankit Kumar", "Ankit Patel"],
   "website_developers": [
@@ -45,8 +48,8 @@ export default function HeroSection() {
       setIsMobile(window.innerWidth <= 768);
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -124,11 +127,16 @@ export default function HeroSection() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
           >
-            <span className="text-blue-400 text-4xl md:text-6xl font-bold">&lt;</span>
+            <span className="text-blue-400 text-4xl md:text-6xl font-bold">
+              &lt;
+            </span>
             <span className="text-white text-4xl md:text-6xl font-bold">/</span>
-            <span className="text-orange-400 text-4xl md:text-6xl font-bold">&gt;</span>
+            <span className="text-orange-400 text-4xl md:text-6xl font-bold">
+              &gt;
+            </span>
             <span>
-              <span className="text-blue-400">TIT</span> <span className="text-white">Developer</span>{" "}
+              <span className="text-blue-400">TIT</span>{" "}
+              <span className="text-white">Developer</span>{" "}
               <span className="text-orange-400">Community</span>
             </span>
           </motion.h1>
@@ -158,13 +166,14 @@ export default function HeroSection() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            Join a community that <span className="text-white font-bold">codes the future</span>.
+            Join a community that{" "}
+            <span className="text-white font-bold">codes the future</span>.
           </motion.p>
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md sm:max-w-lg lg:max-w-xl mt-1 button-container-mobile">
             <motion.a
-              href="join-us"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSeNTyWHWydlYcOmDJrE6w1Fk1ZH4deYDoYDovvR0QDUOYopaA/viewform"
               className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl text-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 text-center"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -172,7 +181,7 @@ export default function HeroSection() {
             >
               Join Us Now
             </motion.a>
-            
+
             <motion.a
               href="learn-more"
               className="flex-1 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 text-white rounded-xl text-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 text-center"
